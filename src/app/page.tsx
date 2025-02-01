@@ -1,10 +1,13 @@
-"use client"
+"use client";
 
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import yaml from "js-yaml";
 import axios from "axios";
+import { FiUpload, FiCheckCircle } from "react-icons/fi";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { motion } from "framer-motion";
 
 const domains: string[] = ["ae", "cm", "dm"];
 const combinations: string[] = ["ae|cm", "cm|dm", "ae", "cm", "dm", "ae|dm"];
@@ -65,7 +68,7 @@ const InferenceUI: React.FC = () => {
 
 
     useEffect(() => {
-        // Simulated YAML file (Replace this with API call if needed)
+        // Simulated YAML file
         const yamlData = `
       ae: "AE default text"
       cm: "CM default text"
@@ -74,7 +77,6 @@ const InferenceUI: React.FC = () => {
       cm|dm: "CM-DM combined text"
       ae|dm: "AE-DM combined text"
     `;
-
         const parsedYaml = yaml.load(yamlData) as { [key: string]: string };
         setTextConfig(parsedYaml);
     }, []);
@@ -193,29 +195,40 @@ const InferenceUI: React.FC = () => {
     };
 
     return (
-        <div className="flex flex-col items-center justify-center h-screen bg-gradient-to-b from-blue-50 to-blue-100 text-gray-900">
-            <div className="text-center mb-6">
-                <img src="https://www.saama.com/wp-content/uploads/saama_logo.svg" alt="Logo" className="mx-auto w-20 h-20 mb-4" />
-                <h2 className="text-3xl font-bold text-blue-700">Welcome to the Inference UI</h2>
+        <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 text-gray-900">
+            {/* Logo */}
+            <div className="text-center mb-8">
+                <img
+                    src="https://www.saama.com/wp-content/uploads/saama_logo.svg"
+                    alt="Logo"
+                    className="mx-auto w-40 h-40"
+                />
+                <h2 className="text-3xl font-bold text-blue-700">Inference UI</h2>
             </div>
-            <Card className="w-[40rem] h-[44rem] p-8 shadow-xl rounded-3xl bg-white border border-blue-300 flex flex-col justify-between">
+
+            {/* Card Container */}
+            <Card className="w-[40rem] h-auto p-8 shadow-lg rounded-xl bg-white border border-gray-300">
                 <CardHeader className="text-center">
-                    <CardTitle className="text-3xl font-semibold text-blue-800">
-                        {step === 0 ? "Select Domains & View Combinations" : "Edit Selected Combination"}
+                    <CardTitle className="text-2xl font-semibold text-gray-800">
+                        {step === 0 ? "Select Domains & Combinations" : "Edit Selected Combination"}
                     </CardTitle>
                 </CardHeader>
-                <CardContent className="text-center text-gray-700 flex-grow">
-                    {/* Step 1: Select Domains & View Available Combinations */}
+
+                <CardContent className="text-center text-gray-700 space-y-6">
+                    {/* Step 1: Select Domains */}
                     {step === 0 && (
                         <>
-                            <div className="mb-6">
-                                <label className="block text-lg font-medium text-blue-700">Select Domains:</label>
+                            <div>
+                                <h3 className="text-lg font-medium text-gray-700">Select Domains</h3>
                                 <div className="flex flex-wrap gap-3 mt-3 justify-center">
                                     {domains.map((domain) => (
                                         <button
                                             key={domain}
-                                            className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 ${
-                                                selectedDomains.includes(domain) ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-700 hover:bg-blue-300"
+                                            className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200
+                                            ${
+                                                selectedDomains.includes(domain)
+                                                    ? "bg-blue-600 text-white shadow-md"
+                                                    : "bg-gray-200 text-gray-700 hover:bg-blue-400"
                                             }`}
                                             onClick={() => handleDomainSelect(domain)}
                                         >
@@ -224,19 +237,23 @@ const InferenceUI: React.FC = () => {
                                     ))}
                                 </div>
                             </div>
+
                             {/* Available Combinations */}
-                            <div className="mt-6">
-                                <h3 className="text-lg font-medium text-blue-700">Available Combinations:</h3>
+                            <div>
+                                <h3 className="text-lg font-medium text-gray-700">Available Combinations</h3>
                                 <div className="flex flex-wrap gap-3 mt-3 justify-center">
                                     {combinations.map((combo) => (
                                         <span
                                             key={combo}
-                                            className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 ${
-                                                isCombinationVisible(combo) ? "bg-blue-600 text-white" : "bg-gray-300 text-gray-700"
+                                            className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200
+                                            ${
+                                                isCombinationVisible(combo)
+                                                    ? "bg-blue-600 text-white shadow-md"
+                                                    : "bg-gray-300 text-gray-700"
                                             }`}
                                         >
-                      {combo.toUpperCase()}
-                    </span>
+                                            {combo.toUpperCase()}
+                                        </span>
                                     ))}
                                 </div>
                             </div>
@@ -280,36 +297,39 @@ const InferenceUI: React.FC = () => {
                             )}
                         </div>
                     )}
+
+                    {/* Step 2: Upload Files */}
                     {step === 3 && (
-                        <div className="text-center">
-                            <h3 className="text-lg font-medium text-blue-700">Upload Files for Each Domain:</h3>
-                            <div className="flex flex-col items-center gap-4 mt-4">
-                                {selectedDomains.map((domain) => (
-                                    <div key={domain} className="w-full p-4 border border-gray-300 rounded-lg bg-gray-100 flex items-center justify-between">
-                                        <span className="font-semibold text-blue-700">{domain.toUpperCase()} *</span>
-                                        <input
-                                            type="file"
-                                            className="hidden"
-                                            id={`file-upload-${domain}`}
-                                            required={true}
-                                            onChange={(e) => handleFileChange(e, domain)
-                                            }
-                                        />
-                                        <label
-                                            htmlFor={`file-upload-${domain}`}
-                                            className="bg-blue-500 text-white px-4 py-2 rounded-lg cursor-pointer hover:bg-blue-600"
-                                        >
-                                            {fileUploads[domain] ? fileUploads[domain]?.name : "Choose File"}
-                                        </label>
-                                    </div>
-                                ))}
-                            </div>
+                        <div className="space-y-4">
+                            <h3 className="text-lg font-medium text-gray-700">Upload Files for Domains</h3>
+
+                            {selectedDomains.map((domain) => (
+                                <div key={domain}
+                                     className="flex items-center justify-between bg-gray-100 p-3 rounded-lg">
+                                    <span className="font-semibold text-blue-700">{domain.toUpperCase()}</span>
+                                    <input
+                                        type="file"
+                                        className="hidden"
+                                        id={`file-upload-${domain}`}
+                                        required={true}
+                                        onChange={(e) => handleFileChange(e, domain)
+                                        }
+                                    />
+                                    <label
+                                        htmlFor={`file-upload-${domain}`}
+                                        className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-lg cursor-pointer hover:bg-blue-600">
+                                        <FiUpload className="text-lg"/>
+                                        {fileUploads[domain] ? fileUploads[domain]?.name : "Choose File"}
+                                    </label>
+                                </div>
+                            ))}
+
                             <div className="flex justify-between mt-6">
                                 {Object.values(fileUploads).some(file => file !== null) && (
                                     <Button
                                         className="px-6 py-3 rounded-lg font-semibold transition-all duration-200 bg-green-600 hover:bg-green-700 text-white"
                                         onClick={handleNext}>
-                                        Submit Files
+                                    Submit Files
                                     </Button>
                                 )}
                             </div>
@@ -344,42 +364,65 @@ const InferenceUI: React.FC = () => {
                     )}
 
                     {step === 4 && (
-                        <div className="flex flex-col items-center justify-center h-screen bg-gradient-to-b from-blue-50 to-blue-100 text-gray-900">
-                            <h2 className="text-4xl font-bold text-blue-700">Processing Status</h2>
-
-                            <Card className="w-[36rem] p-8 mt-6 shadow-xl rounded-3xl bg-white border border-blue-300 flex flex-col items-center">
-                                <h3 className="text-2xl font-medium text-blue-800 mb-4">Current Status</h3>
-
+                        <motion.div
+                            className="text-center"
+                            initial={{ opacity: 0, scale: 0.9 }} // Smooth entrance
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ duration: 0.5, ease: "easeOut" }} // Easing animation
+                        >
+                            <h3 className="text-2xl font-semibold text-gray-800">Processing Status</h3>
+                            <motion.div
+                                className="mt-6 flex flex-col items-center"
+                                initial={{ opacity: 0, y: -10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.8, ease: "easeOut" }}
+                            >
                                 {status === "completed" ? (
-                                    <span className="px-6 py-3 rounded-lg bg-green-600 text-white font-semibold text-lg">
-          ✅ Process Completed
-        </span>
+                                    <motion.span
+                                        className="flex items-center justify-center gap-2 px-6 py-3 rounded-lg bg-green-600 text-white font-semibold text-lg shadow-md"
+                                        initial={{ scale: 0.8 }}
+                                        animate={{ scale: 1.1 }}
+                                        transition={{
+                                            type: "spring",
+                                            stiffness: 200,
+                                            damping: 10,
+                                            repeat: Infinity,
+                                            repeatType: "reverse",
+                                        }} // Pulsating effect
+                                    >
+                                        <FiCheckCircle className="text-2xl animate-pulse" /> Process Completed
+                                    </motion.span>
                                 ) : (
-                                    <span className="px-6 py-3 rounded-lg bg-yellow-500 text-white font-semibold text-lg">
-          ⏳ {status.toUpperCase()}
-        </span>
+                                    <motion.span
+                                        className="flex items-center justify-center gap-2 px-6 py-3 rounded-lg bg-yellow-500 text-white font-semibold text-lg shadow-md"
+                                        initial={{ scale: 1 }}
+                                        animate={{ scale: 1.1 }}
+                                        transition={{
+                                            type: "spring",
+                                            stiffness: 150,
+                                            damping: 8,
+                                            repeat: Infinity,
+                                            repeatType: "reverse",
+                                        }} // Pulsating effect for loading
+                                    >
+                                        <AiOutlineLoading3Quarters className="animate-spin text-2xl" /> {status.toUpperCase()}
+                                    </motion.span>
                                 )}
-
-                                {status !== "completed" && (
-                                    <div className="mt-4 animate-spin rounded-full h-10 w-10 border-t-4 border-blue-700"></div>
-                                )}
-                            </Card>
-                        </div>
+                            </motion.div>
+                        </motion.div>
                     )}
                 </CardContent>
+
+                {/* Navigation Buttons */}
                 <div className="flex justify-between mt-6">
-                    {step <3 && (
+                    {step > 0 &&step < 3 && (
                         <Button className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg" onClick={handleBack}>
                             Back
                         </Button>
                     )}
-
-                    {step<3 && (
-                        <Button
-                            className="px-6 py-3 rounded-lg font-semibold transition-all duration-200 bg-blue-600 hover:bg-blue-700 text-white"
-                            onClick={handleNext}
-                        >
-                            {step === 1 ? "Save & Submit" : "Next"}
+                    {step < 3 && (
+                        <Button className="px-6 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white" onClick={handleNext}>
+                            Next
                         </Button>
                     )}
                 </div>
