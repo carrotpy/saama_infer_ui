@@ -13,6 +13,6 @@ services:
     image: ngrok/ngrok:latest
     command: http --subdomain="saaaminfer" frontend:3000
     ports:
-      - "4040:4040" # ✅ Ngrok web UI (monitor tunnel)
+      - "4040:4040"
     environment:
-      NGROK_AUTHTOKEN: 1XQyk9HBcnCnxAzjtDKg4LSazzI_pXJdLVaxBpeiYBQq5Z7
+      NGROK_AUTHTOKEN:
