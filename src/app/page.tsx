@@ -16,7 +16,7 @@ import {FiUpload, FiCheckCircle, FiDownload, FiRefreshCw} from "react-icons/fi";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { motion } from "framer-motion";
 
-const domains: string[] = ['AE', 'CE', 'CM', 'DM', 'DS', 'DV', 'EC', 'EG', 'EX', 'IE', 'LB', 'MB', 'MH', 'MI', 'MK', 'NV', 'OE', 'PE', 'TR', 'TU', 'VS'];
+const domains: string[] = ['AE', 'CE', 'CM', 'DM', 'DS', 'DV', 'EC', 'EG', 'EX', 'IE', 'LB', 'MB', 'MH', 'MI', 'MK', 'NV', 'OE', 'PE', 'TR', 'TU', 'VS' , 'PR'];
 const combinations: string[] = ['AE|CM', 'AE|DM', 'AE|EG', 'AE|LB', 'AE|MB', 'AE|MH', 'AE|MI', 'AE|MK', 'AE|NV', 'AE|OE', 'AE|PE', 'AE|VS', 'CE|CM', 'CE|DM', 'CE|EG', 'CE|LB', 'CE|MB', 'CE|MH', 'CE|MI', 'CE|MK', 'CE|NV', 'CE|OE', 'CE|PE', 'CE|VS', 'CM|MB', 'CM|MH', 'CM|MI', 'CM|MK', 'CM|NV', 'CM|OE', 'DV|IE', 'EG|MH', 'MB|MH', 'MH|MI', 'MH|MK', 'MH|NV', 'MH|OE', 'MH|PE', 'AE', 'CE', 'CM', 'DM', 'DS', 'DV', 'EC', 'EG', 'EX', 'IE', 'LB', 'MB', 'MH', 'MI', 'MK', 'NV', 'OE', 'PE', 'TR', 'TU', 'VS'];
 const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 
@@ -442,7 +442,7 @@ const InferenceUI: React.FC = () => {
                             <h3 className="text-2xl font-semibold text-gray-800">Processing Status</h3>
                             <motion.div className="mt-6 flex flex-col items-center" initial={{opacity: 0, y: -10}}
                                         animate={{opacity: 1, y: 0}} transition={{duration: 0.8, ease: "easeOut"}}>
-                                {status.toLowerCase().includes("end") ? (
+                                {status.toLowerCase().includes("end:") ? (
                                     <>
                                         <motion.span
                                             className="flex items-center justify-center gap-2 px-6 py-3 rounded-lg bg-green-600 text-white font-semibold text-lg shadow-md">
