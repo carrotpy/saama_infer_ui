@@ -12,12 +12,12 @@ import {
 } from "@/components/ui/tabs"
 
 import axios from "axios";
-import {FiUpload, FiCheckCircle, FiDownload} from "react-icons/fi";
+import {FiUpload, FiCheckCircle, FiDownload, FiRefreshCw} from "react-icons/fi";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { motion } from "framer-motion";
 
 const domains: string[] = ['AE', 'CE', 'CM', 'DM', 'DS', 'DV', 'EC', 'EG', 'EX', 'IE', 'LB', 'MB', 'MH', 'MI', 'MK', 'NV', 'OE', 'PE', 'TR', 'TU', 'VS'];
-const combinations: string[] = ['AE|CM', 'AE|DM', 'AE|EG', 'AE|LB', 'AE|MB', 'AE|MH', 'AE|MI', 'AE|MK', 'AE|NV', 'AE|OE', 'AE|PE', 'AE|PR', 'AE|VS', 'CE|CM', 'CE|DM', 'CE|EG', 'CE|LB', 'CE|MB', 'CE|MH', 'CE|MI', 'CE|MK', 'CE|NV', 'CE|OE', 'CE|PE', 'CE|PR', 'CE|VS', 'CM|MB', 'CM|MH', 'CM|MI', 'CM|MK', 'CM|NV', 'CM|OE', 'CM|PR', 'DV|IE', 'EG|MH', 'MB|MH', 'MB|PR', 'MH|MI', 'MH|MK', 'MH|NV', 'MH|OE', 'MH|PE', 'MH|PR', 'MI|PR', 'MK|PR', 'NV|PR', 'OE|PR', 'PR|TR', 'PR|TU', 'AE', 'CE', 'CM', 'DM', 'DS', 'DV', 'EC', 'EG', 'EX', 'IE', 'LB', 'MB', 'MH', 'MI', 'MK', 'NV', 'OE', 'PE', 'TR', 'TU', 'VS'];
+const combinations: string[] = ['AE|CM', 'AE|DM', 'AE|EG', 'AE|LB', 'AE|MB', 'AE|MH', 'AE|MI', 'AE|MK', 'AE|NV', 'AE|OE', 'AE|PE', 'AE|VS', 'CE|CM', 'CE|DM', 'CE|EG', 'CE|LB', 'CE|MB', 'CE|MH', 'CE|MI', 'CE|MK', 'CE|NV', 'CE|OE', 'CE|PE', 'CE|VS', 'CM|MB', 'CM|MH', 'CM|MI', 'CM|MK', 'CM|NV', 'CM|OE', 'DV|IE', 'EG|MH', 'MB|MH', 'MH|MI', 'MH|MK', 'MH|NV', 'MH|OE', 'MH|PE', 'AE', 'CE', 'CM', 'DM', 'DS', 'DV', 'EC', 'EG', 'EX', 'IE', 'LB', 'MB', 'MH', 'MI', 'MK', 'NV', 'OE', 'PE', 'TR', 'TU', 'VS'];
 const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 
 const InferenceUI: React.FC = () => {
@@ -30,6 +30,7 @@ const InferenceUI: React.FC = () => {
     const [fileUploads, setFileUploads] = useState<{ [key: string]: File | null }>({});
     const [sessionId] = useState<string>(uuidv4()); // ✅ Generate a new session ID on every refresh
     const [windowOpened] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(false);
 
     const formData = new FormData();
     const [downloadFiles, setdownloadFiles] = useState<string[]>([]);
@@ -71,6 +72,7 @@ const InferenceUI: React.FC = () => {
     }, [downloadFiles]);
 
     const fetchFiles = async () => {
+        setLoading(true);
         try {
             const response = await axios.get(`${BASE_URL}/api/get_files?sessionId=${sessionId}`,{
                 headers: {
@@ -97,6 +99,7 @@ const InferenceUI: React.FC = () => {
         } catch (error) {
             console.error("Error fetching files:", error);
         }
+        setLoading(false);
     };
 
 
@@ -528,6 +531,47 @@ const InferenceUI: React.FC = () => {
                     </div>
                 </Card>
                     </TabsContent>
+                <TabsContent value="password">
+                    <Card className="flex flex-col justify-around w-[50rem]  h-auto p-8 shadow-lg rounded-xl bg-white border border-gray-300">
+                        <CardHeader className="flex justify-between items-center">
+                            <CardTitle className="text-2xl font-semibold text-gray-800">Inference Results</CardTitle>
+                            {/* Refresh Button */}
+                            <Button
+                                variant="outline"
+                                onClick={fetchFiles}
+                                className="flex items-center gap-2 px-4 py-2 text-blue-600 border border-blue-500 rounded-lg hover:bg-blue-500 hover:text-white"
+                                disabled={loading} // Disable button when loading
+                            >
+                                <FiRefreshCw className={`text-lg ${loading ? "animate-spin" : ""}`} />
+                                {loading ? "Refreshing..." : "Refresh"}
+                            </Button>
+                        </CardHeader>
+                        <CardContent className="text-gray-700 space-y-4">
+                            {loading ? (
+                                <p className="text-gray-600 text-center">Fetching results...</p>
+                            ) : downloadFiles.length === 0 ? (
+                                <p className="text-gray-600 text-center">No results available. Click Refresh to check again.</p>
+                            ) : (
+                                <ul className="space-y-2">
+                                    {downloadFiles.map((file, index) => (
+                                        file !== "END" && (
+                                            <li key={index} className="flex justify-between items-center bg-gray-100 p-3 rounded-md shadow">
+                                                <span className="text-gray-800">{file}</span>
+                                                <a
+                                                    href={`${BASE_URL}/download/${sessionId}/${file}`}
+                                                    download
+                                                    className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-lg cursor-pointer hover:bg-blue-600"
+                                                >
+                                                    <FiDownload className="text-lg" /> Download
+                                                </a>
+                                            </li>
+                                        )
+                                    ))}
+                                </ul>
+                            )}
+                        </CardContent>
+                    </Card>
+                </TabsContent>
                     </Tabs>
             </main>
             {status.toLowerCase().includes("completed")&& (

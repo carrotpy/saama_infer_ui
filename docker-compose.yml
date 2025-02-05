@@ -8,7 +8,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - NEXT_PUBLIC_BACKEND_API_URL=https://db06-207-140-25-4.ngrok-free.app
+      - NEXT_PUBLIC_BACKEND_API_URL = "https://qadbackend.ngrok.io"
   ngrok:
     image: ngrok/ngrok:latest
     command: http --subdomain="saamainfer" frontend:3000
