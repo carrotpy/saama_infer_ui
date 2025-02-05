@@ -16,8 +16,8 @@ import {FiUpload, FiCheckCircle, FiDownload} from "react-icons/fi";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { motion } from "framer-motion";
 
-const domains: string[] = ['AE', 'CM', 'EX', 'MH', 'LB', 'VS', 'DD', 'DS', 'DM', 'DV', 'IE', 'SV','EC', 'PR', 'EG', 'MB', 'MI', 'MK', 'CE', 'NV', 'OE','TU','TR'];
-const combinations: string[] = ["AE|CM", "CM|DM", "AE", "CM", "DM", "AE|DM"];
+const domains: string[] = ['AE', 'CE', 'CM', 'DM', 'DS', 'DV', 'EC', 'EG', 'EX', 'IE', 'LB', 'MB', 'MH', 'MI', 'MK', 'NV', 'OE', 'PE', 'TR', 'TU', 'VS'];
+const combinations: string[] = ['AE|CM', 'AE|DM', 'AE|EG', 'AE|LB', 'AE|MB', 'AE|MH', 'AE|MI', 'AE|MK', 'AE|NV', 'AE|OE', 'AE|PE', 'AE|PR', 'AE|VS', 'CE|CM', 'CE|DM', 'CE|EG', 'CE|LB', 'CE|MB', 'CE|MH', 'CE|MI', 'CE|MK', 'CE|NV', 'CE|OE', 'CE|PE', 'CE|PR', 'CE|VS', 'CM|MB', 'CM|MH', 'CM|MI', 'CM|MK', 'CM|NV', 'CM|OE', 'CM|PR', 'DV|IE', 'EG|MH', 'MB|MH', 'MB|PR', 'MH|MI', 'MH|MK', 'MH|NV', 'MH|OE', 'MH|PE', 'MH|PR', 'MI|PR', 'MK|PR', 'NV|PR', 'OE|PR', 'PR|TR', 'PR|TU', 'AE', 'CE', 'CM', 'DM', 'DS', 'DV', 'EC', 'EG', 'EX', 'IE', 'LB', 'MB', 'MH', 'MI', 'MK', 'NV', 'OE', 'PE', 'TR', 'TU', 'VS'];
 const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 
 const InferenceUI: React.FC = () => {

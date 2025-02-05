@@ -8,11 +8,11 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - NEXT_PUBLIC_BACKEND_API_URL = "https://db06-207-140-25-4.ngrok-free.app"
+      - NEXT_PUBLIC_BACKEND_API_URL=https://db06-207-140-25-4.ngrok-free.app
   ngrok:
     image: ngrok/ngrok:latest
-    command: http --subdomain="saaaminfer" frontend:3000
+    command: http --subdomain="saamainfer" frontend:3000
     ports:
-      - "4040:4040"
+      - "4041:4040"
     environment:
       NGROK_AUTHTOKEN:
