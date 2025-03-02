@@ -17,7 +17,7 @@ import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { motion } from "framer-motion";
 
 const domains: string[] = ['AE', 'CE', 'CM', 'DM', 'DS', 'DV', 'EC', 'EG', 'EX', 'IE', 'LB', 'MB', 'MH', 'MI', 'MK', 'NV', 'OE', 'PE', 'TR', 'TU', 'VS' , 'PR'];
-const combinations: string[] = ['AE|CM', 'AE|DM', 'AE|EG', 'AE|LB', 'AE|MB', 'AE|MH', 'AE|MI', 'AE|MK', 'AE|NV', 'AE|OE', 'AE|PE', 'AE|VS', 'CE|CM', 'CE|DM', 'CE|EG', 'CE|LB', 'CE|MB', 'CE|MH', 'CE|MI', 'CE|MK', 'CE|NV', 'CE|OE', 'CE|PE', 'CE|VS', 'CM|MB', 'CM|MH', 'CM|MI', 'CM|MK', 'CM|NV', 'CM|OE', 'DV|IE', 'EG|MH', 'MB|MH', 'MH|MI', 'MH|MK', 'MH|NV', 'MH|OE', 'MH|PE', 'AE', 'CE', 'CM', 'DM', 'DS', 'DV', 'EC', 'EG', 'EX', 'IE', 'LB', 'MB', 'MH', 'MI', 'MK', 'NV', 'OE', 'PE', 'TR', 'TU', 'VS'];
+const combinations: string[] = ['AE|CM', 'AE|DM', 'AE|EG', 'AE|LB', 'AE|MB', 'AE|MH', 'AE|MI', 'AE|MK', 'AE|NV', 'AE|OE', 'AE|PE', 'AE|VS', 'CE|CM', 'CE|DM', 'CE|EG', 'CE|LB', 'CE|MB', 'CE|MH', 'CE|MI', 'CE|MK', 'CE|NV', 'CE|OE', 'CE|PE', 'CE|VS', 'CM|MB', 'CM|MH', 'CM|MI', 'CM|MK', 'CM|NV', 'CM|OE', 'DV|IE', 'EG|MH', 'MB|MH', 'MH|MI', 'MH|MK', 'MH|NV', 'MH|OE', 'MH|PE', 'AE', 'CE', 'CM', 'DM', 'DS', 'DV', 'EC', 'EG', 'EX', 'IE', 'LB', 'MB', 'MH', 'MI', 'MK', 'NV', 'OE', 'PE', 'TR', 'TU', 'VS','PR'];
 const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 
 const InferenceUI: React.FC = () => {
@@ -116,6 +116,7 @@ const InferenceUI: React.FC = () => {
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>, domain: string) => {
         const files = event.target.files;
+        console.log(files);
 
         if (files?.length) {
             setFileUploads((prev) => ({
@@ -189,7 +190,7 @@ const InferenceUI: React.FC = () => {
             formData.set("selectedCombination", JSON.stringify(selectedCombinations));
             // formData.set("CombinationValues", JSON.stringify(editableTexts));
             // Store uploaded files in FormData
-            selectedDomains.forEach((domain) => {
+            ['excel','yaml'].forEach((domain) => {
                 if (fileUploads[domain]) {
                     formData.append("files", fileUploads[domain] as File);
                 }
@@ -372,43 +373,128 @@ const InferenceUI: React.FC = () => {
                     {/*    </div>*/}
                     {/*)}*/}
 
+                    {/*/!* Step 2: Upload Files *!/*/}
+                    {/*{step === 2 && (*/}
+                    {/*    <div className="space-y-4">*/}
+                    {/*        /!*<h3 className="text-lg font-medium text-gray-700">Upload Files for Domains</h3>*!/*/}
+
+                    {/*        {selectedDomains.map((domain) => (*/}
+                    {/*            <div key={domain}*/}
+                    {/*                 className="flex items-center justify-between bg-gray-100 p-3 rounded-lg">*/}
+                    {/*                <span className="font-semibold text-blue-700">{domain.toUpperCase()}</span>*/}
+                    {/*                <input*/}
+                    {/*                    type="file"*/}
+                    {/*                    className="hidden"*/}
+                    {/*                    id={`file-upload-${domain}`}*/}
+                    {/*                    required={true}*/}
+                    {/*                    onChange={(e) => handleFileChange(e, domain)*/}
+                    {/*                    }*/}
+                    {/*                />*/}
+                    {/*                <label*/}
+                    {/*                    htmlFor={`file-upload-${domain}`}*/}
+                    {/*                    className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-lg cursor-pointer hover:bg-blue-600">*/}
+                    {/*                    <FiUpload className="text-lg"/>*/}
+                    {/*                    {fileUploads[domain] ? fileUploads[domain]?.name : "Choose File"}*/}
+                    {/*                </label>*/}
+                    {/*            </div>*/}
+                    {/*        ))}*/}
+
+                    {/*        <div className="flex justify-between mt-6">*/}
+                    {/*            {Object.values(fileUploads).some(file => file !== null) && (*/}
+                    {/*                <Button*/}
+                    {/*                    className="px-6 py-3 rounded-lg font-semibold transition-all duration-200 bg-green-600 hover:bg-green-700 text-white"*/}
+                    {/*                    onClick={handleNext}>*/}
+                    {/*                Submit Files*/}
+                    {/*                </Button>*/}
+                    {/*            )}*/}
+                    {/*        </div>*/}
+                    {/*    </div>*/}
+                    {/*)}*/}
+
+                    {/* Step 2: Upload Files */}
                     {/* Step 2: Upload Files */}
                     {step === 2 && (
-                        <div className="space-y-4">
-                            {/*<h3 className="text-lg font-medium text-gray-700">Upload Files for Domains</h3>*/}
-
-                            {selectedDomains.map((domain) => (
-                                <div key={domain}
-                                     className="flex items-center justify-between bg-gray-100 p-3 rounded-lg">
-                                    <span className="font-semibold text-blue-700">{domain.toUpperCase()}</span>
+                        <div className="space-y-6">
+                            {/* Excel File Upload */}
+                            <div className="flex items-center justify-between bg-gray-100 p-4 rounded-lg">
+                                <div className="text-left">
+                                    <h3 className="text-lg font-medium text-blue-700">Upload Excel File</h3>
+                                    <p className="text-sm text-gray-600">
+                                        Only .xlsx or .xls files are allowed &nbsp;
+                                        <a
+                                            href="/samples/sample.xlsx"
+                                            download
+                                            className="text-blue-600 hover:underline"
+                                        >
+                                            Download Sample
+                                        </a>
+                                    </p>
+                                </div>
+                                <div>
                                     <input
                                         type="file"
+                                        id="excel-upload"
+                                        accept=".xlsx, .xls"
                                         className="hidden"
-                                        id={`file-upload-${domain}`}
-                                        required={true}
-                                        onChange={(e) => handleFileChange(e, domain)
-                                        }
+                                        onChange={(e) => handleFileChange(e, "excel")}
                                     />
                                     <label
-                                        htmlFor={`file-upload-${domain}`}
-                                        className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-lg cursor-pointer hover:bg-blue-600">
-                                        <FiUpload className="text-lg"/>
-                                        {fileUploads[domain] ? fileUploads[domain]?.name : "Choose File"}
+                                        htmlFor="excel-upload"
+                                        className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-lg cursor-pointer hover:bg-blue-600"
+                                    >
+                                        <FiUpload className="text-lg" />
+                                        {fileUploads["excel"] ? fileUploads["excel"]?.name : "Choose Excel File"}
                                     </label>
                                 </div>
-                            ))}
+                            </div>
 
-                            <div className="flex justify-between mt-6">
-                                {Object.values(fileUploads).some(file => file !== null) && (
+                            {/* YAML File Upload */}
+                            <div className="flex items-center justify-between bg-gray-100 p-4 rounded-lg">
+                                <div className="text-left">
+                                    <h3 className="text-lg font-medium text-blue-700">Upload YAML File</h3>
+                                    <p className="text-sm text-gray-600">
+                                        Only .yaml or .yml files are allowed &nbsp;
+                                        <a
+                                            href="/samples/sample.yaml"
+                                            download
+                                            className="text-blue-600 hover:underline"
+                                        >
+                                            Download Sample
+                                        </a>
+                                    </p>
+                                </div>
+                                <div>
+                                    <input
+                                        type="file"
+                                        id="yaml-upload"
+                                        accept=".yaml, .yml"
+                                        className="hidden"
+                                        onChange={(e) => handleFileChange(e, "yaml")}
+                                    />
+                                    <label
+                                        htmlFor="yaml-upload"
+                                        className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-lg cursor-pointer hover:bg-blue-600"
+                                    >
+                                        <FiUpload className="text-lg" />
+                                        {fileUploads["yaml"] ? fileUploads["yaml"]?.name : "Choose YAML File"}
+                                    </label>
+                                </div>
+                            </div>
+
+                            {/* Submit Button (Enabled Only When Both Files Are Uploaded) */}
+                            <div className="flex justify-center mt-6">
+                                {fileUploads["excel"] && fileUploads["yaml"] && (
                                     <Button
-                                        className="px-6 py-3 rounded-lg font-semibold transition-all duration-200 bg-green-600 hover:bg-green-700 text-white"
-                                        onClick={handleNext}>
-                                    Submit Files
+                                        className="px-6 py-3 rounded-lg bg-green-600 hover:bg-green-700 text-white"
+                                        onClick={handleNext}
+                                    >
+                                        Submit Files
                                     </Button>
                                 )}
                             </div>
                         </div>
                     )}
+
                     {step === 1 && (
                         <div className="mt-6">
                             <h3 className="text-lg font-medium text-blue-700">Study Details</h3>
@@ -514,7 +600,7 @@ const InferenceUI: React.FC = () => {
 
                     {/* Navigation Buttons */}
                     <div className="flex justify-between mt-6">
-                        {step > 0 && step < 2 && (
+                        {step > 0 && step < 3 && (
                             <Button className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg"
                                     onClick={handleBack}>
                                 Back
