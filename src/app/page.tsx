@@ -25,7 +25,7 @@ const InferenceUI: React.FC = () => {
     const [step, setStep] = useState<number>(0);
     const [selectedDomains, setSelectedDomains] = useState<string[]>([]);
     const [selectedCombinations, setSelectedCombinations] = useState<string[]>([]);
-    const [sheetNames, setSheetNames] = useState([]);
+    const [sheetNames, setSheetNames] =useState<string[]>([]);
     // const [textConfig, setTextConfig] = useState<{ [key: string]: string }>({});
     // const [editableTexts, setEditableTexts] = useState<{ [key: string]: string }>({});
     // const [selectedCombination, setSelectedCombination] = useState<string | null>(null);
@@ -33,10 +33,10 @@ const InferenceUI: React.FC = () => {
     const [sessionId] = useState<string>(uuidv4()); // ✅ Generate a new session ID on every refresh
     const [windowOpened] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
-    const [showSettings, setShowSettings] = useState(false);
-    const [settingsData, setSettingsData] = useState<{ [key: string]: string }>({});
-    const [currentKey, setCurrentKey] = useState("");
-    const [currentValue, setCurrentValue] = useState("");
+    // const [showSettings, setShowSettings] = useState(false);
+    // const [settingsData, setSettingsData] = useState<{ [key: string]: string }>({});
+    // const [currentKey, setCurrentKey] = useState("");
+    // const [currentValue, setCurrentValue] = useState("");
 
     const formData = new FormData();
     const [downloadFiles, setdownloadFiles] = useState<string[]>([]);
@@ -49,10 +49,15 @@ const InferenceUI: React.FC = () => {
 
     console.log("Base URL:", BASE_URL);
 
-    const readExcelFile = async (file) => {
+    const readExcelFile = async (file:File) => {
         const reader = new FileReader();
         reader.onload = (e) => {
-            const data = new Uint8Array(e.target.result);
+            const result = e.target?.result;
+            if (!result || !(result instanceof ArrayBuffer)) {
+                console.error("Invalid file data");
+                return;
+            }
+            const data = new Uint8Array(result);
             const workbook = XLSX.read(data, { type: "array" });
             const extractedSheetNames = workbook.SheetNames;
             setSheetNames(extractedSheetNames); // Set sheet names in state
@@ -161,6 +166,7 @@ const InferenceUI: React.FC = () => {
         );
     };
 
+
     const isCombinationVisible = (combo: string): boolean => {
         const comboParts: string[] = combo.split('|');
         return comboParts.every((part) => selectedDomains.includes(part));
@@ -191,7 +197,7 @@ const InferenceUI: React.FC = () => {
             study_info['studyInfo'] = studyInfo;
 
             formData.set("study_info", JSON.stringify(study_info));
-            formData.set("config", JSON.stringify(settingsData));
+            // formData.set("config", JSON.stringify(settingsData));
 
 
             console.log("Final Form Data Before Submission:");
@@ -247,12 +253,12 @@ const InferenceUI: React.FC = () => {
                 </div>
 
                 {/* Right Section - Settings Button */}
-                <button
-                    className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
-                    onClick={() => setShowSettings(true)}
-                >
-                    ⚙️ Settings
-                </button>
+                {/*<button*/}
+                {/*    className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"*/}
+                {/*    onClick={() => setShowSettings(true)}*/}
+                {/*>*/}
+                {/*    ⚙️ Settings*/}
+                {/*</button>*/}
             </header>
 
             {/* Card Container */}
@@ -570,130 +576,130 @@ const InferenceUI: React.FC = () => {
                     )}
                 </aside>
             )}
-            {showSettings && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-                    <div className="bg-white w-full max-w-lg max-h-[80vh] p-6 rounded-lg shadow-lg overflow-y-auto">
-                        <h2 className="text-xl font-semibold mb-4 text-gray-800">Settings</h2>
+            {/*{showSettings && (*/}
+            {/*    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">*/}
+            {/*        <div className="bg-white w-full max-w-lg max-h-[80vh] p-6 rounded-lg shadow-lg overflow-y-auto">*/}
+            {/*            <h2 className="text-xl font-semibold mb-4 text-gray-800">Settings</h2>*/}
 
-                        {/* Form Fields */}
-                        <div className="space-y-4">
-                            {/* VLLM URL */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700">VLLM URL</label>
-                                <input
-                                    type="text"
-                                    className="w-full border p-2 rounded-lg"
-                                    value={settingsData.vllm_url || ""}
-                                    onChange={(e) => setSettingsData(prev => ({ ...prev, vllm_url: e.target.value }))}
-                                    placeholder="Enter VLLM URL"
-                                />
-                            </div>
+            {/*            /!* Form Fields *!/*/}
+            {/*            <div className="space-y-4">*/}
+            {/*                /!* VLLM URL *!/*/}
+            {/*                <div>*/}
+            {/*                    <label className="block text-sm font-medium text-gray-700">VLLM URL</label>*/}
+            {/*                    <input*/}
+            {/*                        type="text"*/}
+            {/*                        className="w-full border p-2 rounded-lg"*/}
+            {/*                        value={settingsData.vllm_url || ""}*/}
+            {/*                        onChange={(e) => setSettingsData(prev => ({ ...prev, vllm_url: e.target.value }))}*/}
+            {/*                        placeholder="Enter VLLM URL"*/}
+            {/*                    />*/}
+            {/*                </div>*/}
 
-                            {/* Model Name */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700">Model Name</label>
-                                <input
-                                    type="text"
-                                    className="w-full border p-2 rounded-lg"
-                                    value={settingsData.model_name || ""}
-                                    onChange={(e) => setSettingsData(prev => ({ ...prev, model_name: e.target.value }))}
-                                    placeholder="Enter Model Name"
-                                />
-                            </div>
+            {/*                /!* Model Name *!/*/}
+            {/*                <div>*/}
+            {/*                    <label className="block text-sm font-medium text-gray-700">Model Name</label>*/}
+            {/*                    <input*/}
+            {/*                        type="text"*/}
+            {/*                        className="w-full border p-2 rounded-lg"*/}
+            {/*                        value={settingsData.model_name || ""}*/}
+            {/*                        onChange={(e) => setSettingsData(prev => ({ ...prev, model_name: e.target.value }))}*/}
+            {/*                        placeholder="Enter Model Name"*/}
+            {/*                    />*/}
+            {/*                </div>*/}
 
-                            {/* API Key */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700">API Key</label>
-                                <input
-                                    type="text"
-                                    className="w-full border p-2 rounded-lg"
-                                    value={settingsData.api_key || ""}
-                                    onChange={(e) => setSettingsData(prev => ({ ...prev, api_key: e.target.value }))}
-                                    placeholder="Enter API Key"
-                                />
-                            </div>
+            {/*                /!* API Key *!/*/}
+            {/*                <div>*/}
+            {/*                    <label className="block text-sm font-medium text-gray-700">API Key</label>*/}
+            {/*                    <input*/}
+            {/*                        type="text"*/}
+            {/*                        className="w-full border p-2 rounded-lg"*/}
+            {/*                        value={settingsData.api_key || ""}*/}
+            {/*                        onChange={(e) => setSettingsData(prev => ({ ...prev, api_key: e.target.value }))}*/}
+            {/*                        placeholder="Enter API Key"*/}
+            {/*                    />*/}
+            {/*                </div>*/}
 
-                            {/* ID Generation Toggle */}
-                            <div className="flex items-center justify-between">
-                                <label className="text-sm font-medium text-gray-700">Enable ID Generation</label>
-                                <input
-                                    type="checkbox"
-                                    className="w-5 h-5"
-                                    checked={settingsData.is_id_generation || false}
-                                    onChange={(e) => setSettingsData(prev => ({ ...prev, is_id_generation: e.target.checked }))}
-                                />
-                            </div>
+            {/*                /!* ID Generation Toggle *!/*/}
+            {/*                <div className="flex items-center justify-between">*/}
+            {/*                    <label className="text-sm font-medium text-gray-700">Enable ID Generation</label>*/}
+            {/*                    <input*/}
+            {/*                        type="checkbox"*/}
+            {/*                        className="w-5 h-5"*/}
+            {/*                        checked={settingsData.is_id_generation || false}*/}
+            {/*                        onChange={(e) => setSettingsData(prev => ({ ...prev, is_id_generation: e.target.checked }))}*/}
+            {/*                    />*/}
+            {/*                </div>*/}
 
-                            {/* Conditionally Rendered OpenAI Fields */}
-                            {settingsData.is_id_generation && (
-                                <div className="space-y-4 border-t border-gray-300 pt-4">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700">OpenAI Key</label>
-                                        <input
-                                            type="text"
-                                            className="w-full border p-2 rounded-lg"
-                                            value={settingsData.open_ai_key || ""}
-                                            onChange={(e) => setSettingsData(prev => ({ ...prev, open_ai_key: e.target.value }))}
-                                            placeholder="Enter OpenAI Key"
-                                        />
-                                    </div>
+            {/*                /!* Conditionally Rendered OpenAI Fields *!/*/}
+            {/*                {settingsData.is_id_generation && (*/}
+            {/*                    <div className="space-y-4 border-t border-gray-300 pt-4">*/}
+            {/*                        <div>*/}
+            {/*                            <label className="block text-sm font-medium text-gray-700">OpenAI Key</label>*/}
+            {/*                            <input*/}
+            {/*                                type="text"*/}
+            {/*                                className="w-full border p-2 rounded-lg"*/}
+            {/*                                value={settingsData.open_ai_key || ""}*/}
+            {/*                                onChange={(e) => setSettingsData(prev => ({ ...prev, open_ai_key: e.target.value }))}*/}
+            {/*                                placeholder="Enter OpenAI Key"*/}
+            {/*                            />*/}
+            {/*                        </div>*/}
 
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700">OpenAI Endpoint</label>
-                                        <input
-                                            type="text"
-                                            className="w-full border p-2 rounded-lg"
-                                            value={settingsData.open_ai_endpoint || ""}
-                                            onChange={(e) => setSettingsData(prev => ({ ...prev, open_ai_endpoint: e.target.value }))}
-                                            placeholder="Enter OpenAI Endpoint"
-                                        />
-                                    </div>
+            {/*                        <div>*/}
+            {/*                            <label className="block text-sm font-medium text-gray-700">OpenAI Endpoint</label>*/}
+            {/*                            <input*/}
+            {/*                                type="text"*/}
+            {/*                                className="w-full border p-2 rounded-lg"*/}
+            {/*                                value={settingsData.open_ai_endpoint || ""}*/}
+            {/*                                onChange={(e) => setSettingsData(prev => ({ ...prev, open_ai_endpoint: e.target.value }))}*/}
+            {/*                                placeholder="Enter OpenAI Endpoint"*/}
+            {/*                            />*/}
+            {/*                        </div>*/}
 
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700">OpenAI Version</label>
-                                        <input
-                                            type="text"
-                                            className="w-full border p-2 rounded-lg"
-                                            value={settingsData.open_ai_version || ""}
-                                            onChange={(e) => setSettingsData(prev => ({ ...prev, open_ai_version: e.target.value }))}
-                                            placeholder="Enter OpenAI Version"
-                                        />
-                                    </div>
+            {/*                        <div>*/}
+            {/*                            <label className="block text-sm font-medium text-gray-700">OpenAI Version</label>*/}
+            {/*                            <input*/}
+            {/*                                type="text"*/}
+            {/*                                className="w-full border p-2 rounded-lg"*/}
+            {/*                                value={settingsData.open_ai_version || ""}*/}
+            {/*                                onChange={(e) => setSettingsData(prev => ({ ...prev, open_ai_version: e.target.value }))}*/}
+            {/*                                placeholder="Enter OpenAI Version"*/}
+            {/*                            />*/}
+            {/*                        </div>*/}
 
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700">OpenAI Model</label>
-                                        <input
-                                            type="text"
-                                            className="w-full border p-2 rounded-lg"
-                                            value={settingsData.open_ai_model || ""}
-                                            onChange={(e) => setSettingsData(prev => ({ ...prev, open_ai_model: e.target.value }))}
-                                            placeholder="Enter OpenAI Model"
-                                        />
-                                    </div>
-                                </div>
-                            )}
-                        </div>
+            {/*                        <div>*/}
+            {/*                            <label className="block text-sm font-medium text-gray-700">OpenAI Model</label>*/}
+            {/*                            <input*/}
+            {/*                                type="text"*/}
+            {/*                                className="w-full border p-2 rounded-lg"*/}
+            {/*                                value={settingsData.open_ai_model || ""}*/}
+            {/*                                onChange={(e) => setSettingsData(prev => ({ ...prev, open_ai_model: e.target.value }))}*/}
+            {/*                                placeholder="Enter OpenAI Model"*/}
+            {/*                            />*/}
+            {/*                        </div>*/}
+            {/*                    </div>*/}
+            {/*                )}*/}
+            {/*            </div>*/}
 
-                        {/* Display JSON Output */}
-                        {Object.keys(settingsData).length > 0 && (
-                            <div className="mt-4 p-3 bg-gray-100 rounded-lg">
-                                <h3 className="font-medium text-gray-700">Generated JSON:</h3>
-                                <pre className="text-sm text-gray-800 bg-gray-200 p-2 rounded max-h-40 overflow-y-auto">
-                        {JSON.stringify(settingsData, null, 2)}
-                    </pre>
-                            </div>
-                        )}
+            {/*            /!* Display JSON Output *!/*/}
+            {/*            {Object.keys(settingsData).length > 0 && (*/}
+            {/*                <div className="mt-4 p-3 bg-gray-100 rounded-lg">*/}
+            {/*                    <h3 className="font-medium text-gray-700">Generated JSON:</h3>*/}
+            {/*                    <pre className="text-sm text-gray-800 bg-gray-200 p-2 rounded max-h-40 overflow-y-auto">*/}
+            {/*            {JSON.stringify(settingsData, null, 2)}*/}
+            {/*        </pre>*/}
+            {/*                </div>*/}
+            {/*            )}*/}
 
-                        {/* Close Button */}
-                        <button
-                            className="mt-4 w-full bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition"
-                            onClick={() => setShowSettings(false)}
-                        >
-                            Close
-                        </button>
-                    </div>
-                </div>
-            )}
+            {/*            /!* Close Button *!/*/}
+            {/*            <button*/}
+            {/*                className="mt-4 w-full bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition"*/}
+            {/*                onClick={() => setShowSettings(false)}*/}
+            {/*            >*/}
+            {/*                Close*/}
+            {/*            </button>*/}
+            {/*        </div>*/}
+            {/*    </div>*/}
+            {/*)}*/}
         </div>
     );
 };
