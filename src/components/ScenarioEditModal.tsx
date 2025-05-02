@@ -5,6 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { toast } from "sonner";
+import { Loader2 } from "lucide-react"; // ✅ import a nice spinner icon
 import { generateScenarioFromLLM } from "@/lib/api/scenarios";
 
 interface ScenarioEditModalProps {
@@ -32,6 +33,7 @@ export const ScenarioEditModal = ({ open, onClose, scenario, onSave }: ScenarioE
             }));
             toast.success("Generated successfully");
         } catch (err) {
+            console.log(err)
             toast.error("Failed to generate");
         } finally {
             setLoading(false);
@@ -69,7 +71,9 @@ export const ScenarioEditModal = ({ open, onClose, scenario, onSave }: ScenarioE
                         />
                     </div>
 
-                    <Button onClick={handleGenerate} disabled={loading}>
+
+                    <Button onClick={handleGenerate} disabled={loading} className="flex items-center gap-2">
+                        {loading && <Loader2 className="h-4 w-4 animate-spin" />}
                         {loading ? "Generating..." : "Generate with LLM"}
                     </Button>
                 </div>

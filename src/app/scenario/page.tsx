@@ -13,34 +13,36 @@ interface ScenarioType {
 
 export default function ScenariosPage() {
     const { sheetNames } = useStudyData();
-    const [scenarios, setScenarios] = useState<ScenarioType[]>([]);
+    const [loading, setLoading] = useState<boolean>(false);
+    // const [scenarios, setScenarios] = useState<ScenarioType[]>([]);
     const [editedScenarios, setEditedScenarios] = useState<ScenarioType[]>([]);
     const [columns, setColumns] = useState<string[]>([]);
 
     const loadScenarios = async () => {
         try {
+            setLoading(true);
             const data = await fetchFilteredScenarios(sheetNames);
             if (data.length > 0) {
                 const dynamicCols = Object.keys(data[0]).filter(
-                    (col) => !col.toLowerCase().endsWith("_id")
+                    (col) => !(col.toLowerCase().endsWith("_id") || col.toLowerCase().endsWith("active")),
                 );
                 setColumns(dynamicCols);
             }
-            const updated = data.map(item => ({ ...item, active: true }));
-            setScenarios(updated);
+            const updated = data.map(item => ({ ...item }));
+            // setScenarios(updated);
             setEditedScenarios(updated);
             toast.success("Scenarios loaded!");
         } catch (error) {
             console.error(error);
             toast.error("Failed to load scenarios.");
+        }finally {
+            setLoading(false); // stop spinner
         }
     };
 
     useEffect(() => {
-        if (sheetNames.length > 0) {
-            loadScenarios();
-        }
-    }, [sheetNames]);
+        loadScenarios();
+    }, []);
 
     // const handleInputChange = (index: number, key: string, value: any) => {
     //     const updated = [...editedScenarios];
@@ -48,11 +50,11 @@ export default function ScenariosPage() {
     //     setEditedScenarios(updated);
     // };
 
-    const handleToggleActivate = (index: number) => {
-        const updated = [...editedScenarios];
-        updated[index].active = !updated[index].active;
-        setEditedScenarios(updated);
-    };
+    // const handleToggleActivate = (index: number) => {
+    //     const updated = [...editedScenarios];
+    //     updated[index].active = !updated[index].active;
+    //     setEditedScenarios(updated);
+    // };
 
     // const handleRowGenerate = async (index: number) => {
     //     try {
@@ -121,7 +123,12 @@ export default function ScenariosPage() {
                 >Save All</Button>
             </div>
 
-            {editedScenarios.length > 0 ? (
+            {loading ? (
+                <div className="flex justify-center items-center h-60">
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500" />
+                    <p className="ml-4 text-gray-700 text-lg">Loading Scenarios...</p>
+                </div>
+            ): editedScenarios.length > 0 ? (
                 <div className="overflow-x-auto bg-white p-4 rounded shadow-md">
                     <ScenarioDataTable
                         scenarios={editedScenarios}

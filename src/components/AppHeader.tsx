@@ -1,13 +1,14 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useStudyData } from "@/context/StudyDataContext";
 import { useRouter } from "next/navigation";
+import { fetchStudies } from "@/lib/api/study"; // ✅ import your new API call
 import { FiLogOut } from "react-icons/fi";
-
-const studies = ["Study A", "Study B", "Study C"];
 
 export const AppHeader = () => {
     const { selectedStudy, setSelectedStudy, setOnboardingCompleted } = useStudyData();
+    const [studies, setStudies] = useState<string[]>([]);
     const router = useRouter();
 
     const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -15,11 +16,23 @@ export const AppHeader = () => {
     };
 
     const handleLogout = () => {
-        sessionStorage.clear(); // ❌ Clears all keys (could use removeItem if you want more control)
+        sessionStorage.clear();
         setSelectedStudy('');
         setOnboardingCompleted(false);
-        router.push("/"); // Optional: redirect to home
+        router.push("/");
     };
+
+    useEffect(() => {
+        const loadStudies = async () => {
+            try {
+                const fetchedStudies = await fetchStudies();
+                setStudies(fetchedStudies);
+            } catch (error) {
+                console.error("Failed to load studies:", error);
+            }
+        };
+        loadStudies();
+    }, []);
 
     return (
         <header className="w-full bg-white shadow-md border-b border-gray-300 p-4 flex items-center justify-between">

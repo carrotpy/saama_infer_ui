@@ -2,9 +2,11 @@
 
 import { useState } from "react";
 import { submitNewStudy } from "@/lib/api/study";
-import { toast } from "sonner"; // if not already installed: npm install sonner
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export default function OnboardPage() {
+    const router = useRouter();
     const [form, setForm] = useState({
         study_name: "",
         therapeutic_area: "",
@@ -22,6 +24,7 @@ export default function OnboardPage() {
         try {
             await submitNewStudy(form); // ⬅️ use imported API method
             toast.success("Study onboarded successfully!");
+            router.push("/");
         } catch (error) {
             console.error(error);
             toast.error("Error submitting study.");
@@ -70,6 +73,7 @@ export default function OnboardPage() {
 
                     <button
                         onClick={handleSubmit}
+
                         className="w-full bg-blue-600 text-white font-medium px-4 py-2 rounded hover:bg-blue-700 transition"
                     >
                         Submit

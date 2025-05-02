@@ -1,11 +1,14 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useStudyData } from "@/context/StudyDataContext";
 import { useRouter } from "next/navigation";
+import { fetchStudies } from "@/lib/api/study"; // ✅ Import the API call
 
 export const OnboardingModal = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
     const { setSelectedStudy, setOnboardingCompleted } = useStudyData();
+    const [studies, setStudies] = useState<string[]>([]);
     const router = useRouter();
 
     const handleStudySelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -18,9 +21,21 @@ export const OnboardingModal = ({ open, onClose }: { open: boolean; onClose: () 
     };
 
     const handleNewStudy = () => {
-        onClose(); // Optional: close modal before routing
+        onClose();
         router.push("/onboard");
     };
+
+    useEffect(() => {
+        const loadStudies = async () => {
+            try {
+                const fetchedStudies = await fetchStudies();
+                setStudies(fetchedStudies);
+            } catch (error) {
+                console.error("Failed to load studies:", error);
+            }
+        };
+        loadStudies();
+    }, []);
 
     return (
         <Dialog open={open} onOpenChange={onClose}>
@@ -45,9 +60,11 @@ export const OnboardingModal = ({ open, onClose }: { open: boolean; onClose: () 
                         onChange={handleStudySelect}
                     >
                         <option disabled>Select existing study</option>
-                        <option>Study A</option>
-                        <option>Study B</option>
-                        <option>Study C</option>
+                        {studies.map((study) => (
+                            <option key={study} value={study}>
+                                {study}
+                            </option>
+                        ))}
                     </select>
                 </div>
             </DialogContent>

@@ -18,9 +18,10 @@ export async function submitNewStudy(payload: {
     return response.data;
 }
 
-export async function getAllStudies() {
-    const response = await axios.get(`${BASE_URL}/api/studies`, {
-        headers: getStudyHeader(),
-    });
+
+
+export async function fetchStudies(): Promise<string[]> {
+    const response = await axios.get(`${BASE_URL}/api/studies`);
     return response.data;
 }
+
